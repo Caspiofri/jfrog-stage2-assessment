@@ -1,0 +1,8 @@
+# run from: <scratchpad>/original-be7a62e
+# date: 2026-10-31T11:39:35+02:00
+# git commit: be7a62e65001c92d52932848daca45ad4994097b
+# jf version 2.129.0
+jf audit --server-id=trial --sca --vuln --extended-table --format=table > table.txt 2> (stderr.log section 1)
+jf audit --server-id=trial --sca --vuln --format=simple-json > results.json 2> (stderr.log section 2)
+exit=0
+exit=0
