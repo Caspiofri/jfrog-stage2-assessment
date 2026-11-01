@@ -2,8 +2,6 @@ name: Workflow-Task-seed
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
   workflow_dispatch:
 permissions:
   actions: read # for detecting the Github Actions environment.
@@ -18,10 +16,12 @@ jobs:
   build-publish-docker:
     runs-on: ubuntu-latest
     env:
-      DOCKER_REPO: <SET YOUR DOCKER VIRTUAL/LOCAL/REMOTE REPO HERE>
-      IMAGE_NAME: myApp
+      DOCKER_REPO: jt-docker
+      DOCKER_LOCAL_REPO: jt-docker-local
+      IMAGE_NAME: user-management-service
+      IMAGE_VERSION: ${{ github.sha }}
       JF_URL: https://${{ vars.JF_URL }}/
-      NPM_VIRTUAL_REPO: <SET YOUR NPM VIRTUAL/LOCAL/REMOTE REPO HERE>
+      NPM_VIRTUAL_REPO: jt-npm
       DOCKER_BUILD_SUMMARY: false
       DOCKER_BUILD_RECORD_UPLOAD: false
       JFROG_CLI_LOG_LEVEL: DEBUG
@@ -39,7 +39,7 @@ jobs:
         oidc-provider-name: jfrog-github-oidc #Establish an OIDC connection to allow trust between the workflow and your JFrog instance
     
     - name: Set CLI Config
-      run: jf npm-config --global=true --repo-resolve=${{ vars.NPM_VIRTUAL_REPO }} --repo-deploy=${{ vars.NPM_VIRTUAL_REPO }}
+      run: jf npm-config --global=true --repo-resolve=${{ env.NPM_VIRTUAL_REPO }} --repo-deploy=${{ env.NPM_VIRTUAL_REPO }}
 
     - name: build webapp
       run: |
@@ -61,15 +61,15 @@ jobs:
       with:
         push: true
         context: .
-        platforms: linux/amd64,linux/arm64
-        tags: ${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}
+        platforms: linux/amd64
+        tags: ${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}
         provenance: false
         
 
     - name: add docker package to build
       run: |
-           echo "${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}" > metadata.json
-           jf rt build-docker-create ${{ env.DOCKER_REPO }} --image-file metadata.json
+           echo "${{ vars.JF_URL }}/${{ env.DOCKER_REPO }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_VERSION }}@${{ steps.build.outputs.digest }}" > metadata.json
+           jf rt build-docker-create ${{ env.DOCKER_LOCAL_REPO }} --image-file metadata.json
            
     - name: publish build info
       run: |
