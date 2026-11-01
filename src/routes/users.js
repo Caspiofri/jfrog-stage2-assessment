@@ -139,12 +139,32 @@ router.put('/:id', (req, res) => {
     });
   }
   
-  // Update user using lodash merge (vulnerable version)
-  const updatedUser = _.merge(users[userIndex], {
-    username: username || users[userIndex].username,
-    email: email || users[userIndex].email,
-    updatedAt: moment().toISOString()
-  });
+  // Build the update from an explicit allow-list of fields with string type
+  // checks, instead of deep-merging attacker-controlled request data. This
+  // keeps nested/crafted keys (e.g. __proto__, constructor) out of the sink.
+  if (username !== undefined && typeof username !== 'string') {
+    return res.status(400).json({
+      success: false,
+      error: 'username must be a string',
+      timestamp: moment().toISOString()
+    });
+  }
+  if (email !== undefined && typeof email !== 'string') {
+    return res.status(400).json({
+      success: false,
+      error: 'email must be a string',
+      timestamp: moment().toISOString()
+    });
+  }
+
+  const updatedUser = users[userIndex];
+  if (typeof username === 'string') {
+    updatedUser.username = username;
+  }
+  if (typeof email === 'string') {
+    updatedUser.email = email;
+  }
+  updatedUser.updatedAt = moment().toISOString();
   
   res.json({
     success: true,
