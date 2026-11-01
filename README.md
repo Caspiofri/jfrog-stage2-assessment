@@ -110,7 +110,7 @@ A simple Node.js API service for managing users. This service provides basic CRU
 
 ## Environment Variables
 
-Create a `.env` file based on `.env.example`:
+Set the following environment variables (for local development you can place them in a `.env` file):
 
 - `PORT` - Server port (default: 3000)
 - `NODE_ENV` - Environment (development/production)
