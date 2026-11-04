@@ -1,6 +1,6 @@
 # Stage 2 – Contextual Vulnerability Assessment and Remediation
 
-**Source:** [yonarbel/jfrog_task](https://github.com/yonarbel/jfrog_task) · **Submission:** [jfrog-stage2-assessment](https://github.com/Caspiofri/jfrog-stage2-assessment/tree/stage2/final)
+**Source:** [yonarbel/jfrog_task](https://github.com/yonarbel/jfrog_task) · **Submission:** [jfrog-stage2-assessment](https://github.com/Caspiofri/jfrog-stage2-assessment), work on `main` · Build Info records branch [`stage2/final`](https://github.com/Caspiofri/jfrog-stage2-assessment/tree/stage2/final)
 ## Summary
 
 This assessment used JFrog Xray Contextual Analysis to investigate vulnerable dependencies in a Node.js application, prioritize remediation based on exploitability, and verify the fix.
@@ -24,7 +24,7 @@ This assessment used JFrog Xray Contextual Analysis to investigate vulnerable de
 | Local environment | Node.js 22.23.2, npm 10.9.8                  |
 | Docker runtime    | `node:14-alpine`                             |
 | Source baseline   | `be7a62e`                                    |
-| Submission branch | `stage2/final`                               |
+| Submission branch | `main` (Build Info records `stage2/final`)   |
 
 ### Preparing the Application
 
@@ -235,7 +235,7 @@ Rather than relying only on a dependency upgrade, I applied three complementary 
 
 **A. Dependency upgrade**: Upgraded Lodash from 4.17.4 to 4.17.21 in `package.json` and `package-lock.json` to address the targeted vulnerability (CVE-2018-16487) and six additional known CVEs.
 
-![Lodash version upgrade in package.json](images/lodash-version-upgrade.png)
+![Lodash version after the upgrade, npm ls output (cropped)](images/lodash-version-upgrade.png)
 
 ![Lodash lockfile update](images/lodash-lockfile-update.png)
 
@@ -310,9 +310,12 @@ I verified the image architecture and installed Lodash version locally, then ret
 
 **Verification:** The Docker image platform and installed Lodash version were verified locally. The published Build Info was retrieved through the Artifactory API, confirming the Git revision, Docker image ID, manifest digest, and associated artifacts.
 
+**GitHub Actions workflow (`.github/workflows/publish-build.yml`):** A push to main on 4 Nov 2026 triggered this workflow once. It failed at Setup JFrog CLI, because OIDC is not configured, and built and published nothing. The workflow is now disabled. The published image and Build Info come from the JFrog CLI run described above.
+
 **Evidence:**
 - [Published JFrog Build Info #3](https://trialc914kt.jfrog.io/ui/builds/user-management-service/3/1793571105750/published?buildRepo=artifactory-build-info)
-- [GitHub — Stage 2 branch](https://github.com/Caspiofri/jfrog-stage2-assessment/tree/stage2/final)
+- [GitHub — `main`, where the work is](https://github.com/Caspiofri/jfrog-stage2-assessment/tree/main)
+- [GitHub — `stage2/final`, the branch recorded in Build Info](https://github.com/Caspiofri/jfrog-stage2-assessment/tree/stage2/final)
 
 **Verification:** I checked the installed Lodash version inside the built image rather than relying only on the local dependency files. This ensures that the published artifact contains the intended remediation, even if Docker's npm version resolves dependencies differently from the local environment.
 
