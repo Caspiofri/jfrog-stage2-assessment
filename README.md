@@ -1,3 +1,9 @@
+# JFrog Assessment: Stage 2
+
+Read the report: [docs/stage2-report.md](docs/stage2-report.md)
+
+The original project README follows.
+
 # User Management Service
 
 A simple Node.js API service for managing users. This service provides basic CRUD operations for user management with REST endpoints.
